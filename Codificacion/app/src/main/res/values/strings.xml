@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Gestion</string>
+    <string name="TitleName">MoneyTrack</string>
+    <string name="Configs">Config</string>
+    <string name="simbolo">$</string>
+    <string name="home">Home</string>
+    <string name="Gastos_hoy">Total gastos hoy</string>
+    <string name="Gastos_Mes">Gastos mensuales</string>
+    <string name="Ingresos_hoy">Total ingresos hoy</string>
+    <string name="Ingresos_mes">Ingresos mensuales</string>
+    <string name="categorias">Categorías</string>
+    <string name="boton">Button</string>
+    <string name="edicion">Editar movimientos</string>
+    <string name="hoy">Movimientos de hoy</string>
+    <string name="agregar_movimiento">Agregar movimiento</string>
+    <string name="movimientos_totales">Movimientos totales</string>
 </resources>
