@@ -14,4 +14,17 @@
     <string name="hoy">Movimientos de hoy</string>
     <string name="agregar_movimiento">Agregar movimiento</string>
     <string name="movimientos_totales">Movimientos totales</string>
+    <string name="exit">Salir</string>
+    <string name="config">Ajustes</string>
+    <string name="mount">Monto</string>
+    <string name="date">Seleccione fecha</string>
+    <string name="nuevo_movimiento">NUEVO MOVIMIENTO</string>
+    <string name="Gasto">Gasto</string>
+    <string name="Ingreso">Ingreso</string>
+    <string name="selectCategorry">Seleccionar categoría</string>
+    <string name="Save">Guardar</string>
+    <string name="Cancel">Cancelar</string>
+    <string name="image">Boleta</string>
+    <string name="todo">TODO</string>
+    <string name="ajuste_de_movimiento">AJUSTE DE MOVIMIENTO</string>
 </resources>

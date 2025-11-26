@@ -1,6 +1,8 @@
 package com.example.gestion;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,5 +22,25 @@ public class HomeActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        Button BtnAdd, BtnEdit, BtnMovements, BtnAll, BtnCat, BtnExit, ImgBtnConfigs;
+
+        BtnAdd = findViewById(R.id.BtnAdd);
+        BtnAdd.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, AddActivity.class);
+            startActivity(intent);
+        });
+
+        BtnEdit = findViewById(R.id.BtnEdit);
+        BtnEdit.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, EditActivity.class);
+            startActivity(intent);
+        });
+
+        BtnExit = findViewById(R.id.BtnExit);
+        BtnExit.setOnClickListener(v -> {
+            finish();
+        });
+
+
     }
 }
