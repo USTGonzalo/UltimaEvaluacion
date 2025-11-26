@@ -10,59 +10,64 @@
     android:background="@drawable/background2"
     android:padding="16dp">
 
-    <!-- TÍTULO HOME -->
-
     <Button
-        android:id="@+id/button9"
+        android:id="@+id/BtnAll"
         android:layout_width="178dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/black"
         android:text="@string/movimientos_totales"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cardIngresosMes" />
+        app:layout_constraintTop_toBottomOf="@+id/cardIngresosMes"
+        tools:ignore="TextSizeCheck" />
 
     <Button
         android:id="@+id/button11"
         android:layout_width="178dp"
         android:layout_height="48dp"
+        android:backgroundTint="@color/black"
         android:layout_marginTop="152dp"
         android:text="Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardIngresosMes" />
 
     <Button
-        android:id="@+id/button10"
+        android:id="@+id/BtnCat"
         android:layout_width="178dp"
         android:layout_height="48dp"
+        android:backgroundTint="@color/black"
         android:layout_marginTop="84dp"
         android:text="@string/categorias"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardIngresosMes" />
 
     <Button
-        android:id="@+id/button8"
+        android:id="@+id/BtnAdd"
         android:layout_width="178dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"
+        android:backgroundTint="@color/black"
         android:text="@string/agregar_movimiento"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardIngresosHoy"
-        tools:ignore="TouchTargetSizeCheck" />
+        tools:ignore="TouchTargetSizeCheck,TextSizeCheck" />
 
     <Button
-        android:id="@+id/button7"
+        android:id="@+id/BtnMovements"
         android:layout_width="178dp"
         android:layout_height="48dp"
         android:layout_marginTop="152dp"
+        android:backgroundTint="@color/black"
         android:text="@string/hoy"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardIngresosHoy"
         tools:ignore="TextSizeCheck" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/BtnEdit"
         android:layout_width="178dp"
         android:layout_height="48dp"
+        android:backgroundTint="@color/black"
         android:layout_marginTop="84dp"
         android:text="@string/edicion"
         app:layout_constraintStart_toStartOf="parent"
@@ -80,21 +85,20 @@
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginStart="24dp"/>
 
-    <!-- BOTÓN CONFIGURACIONES -->
     <ImageButton
         android:id="@+id/ImgBtnConfigs"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="24dp"
-        android:background="@android:color/transparent"
-        android:scaleType="centerInside"
         android:adjustViewBounds="true"
-        android:padding="0dp"
+        android:background="@android:color/transparent"
         android:contentDescription="@string/Configs"
-        app:srcCompat="@drawable/configuraciones"
+        android:padding="0dp"
+        android:scaleType="centerInside"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+        app:srcCompat="@drawable/configuraciones" />
 
     <!-- ==== TARJETA 1 ==== -->
     <androidx.cardview.widget.CardView
@@ -293,14 +297,27 @@
     </androidx.cardview.widget.CardView>
 
     <Button
-        android:id="@+id/button12"
+        android:id="@+id/BtnExit"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Salir"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="#f12"
+        android:text="@string/exit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:ignore="TextContrastCheck" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="34dp"
+        android:text="@string/config"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ImgBtnConfigs" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
