@@ -39,6 +39,7 @@
         android:outlineProvider="none"
         android:padding="12dp"
         android:textAlignment="center"
+        android:textColor="@color/white"
         android:textColorHint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.476"

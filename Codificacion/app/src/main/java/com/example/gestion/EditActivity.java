@@ -1,8 +1,21 @@
 package com.example.gestion;
 
+import static android.widget.Toast.LENGTH_LONG;
+import static android.widget.Toast.LENGTH_SHORT;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,8 +23,16 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.gestion.cache.Movements;
+import com.example.gestion.database.MovementsDatabase;
+
+import java.io.File;
+import java.io.InputStream;
+import java.util.List;
+
 public class EditActivity extends AppCompatActivity {
 
+    private List<String> ids;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,18 +45,100 @@ public class EditActivity extends AppCompatActivity {
             return insets;
         });
 
-        // ------- SPINNER --------
+        Button Exit = findViewById(R.id.btnCancel2);
+        Exit.setOnClickListener(v -> {finish();});
+
+        EditText txtMount = findViewById(R.id.txtMount2);
+        EditText txtDate = findViewById(R.id.txtDate2);
+        RadioButton radioIngreso = findViewById(R.id.RadioIngreso);
+        RadioButton radioGasto = findViewById(R.id.RadioGasto);
+        Button btnCategorias = findViewById(R.id.btnCategories2);
+        ImageView imgPhoto = findViewById(R.id.btnComp2);
         Spinner spinner = findViewById(R.id.SpinnerIDS);
 
-        String[] ids = {"ID 1", "ID 2", "ID 3", "ID 4", "ID 5"};
+        MovementsDatabase db = new MovementsDatabase(this);
+
+        //Carga los Ids en el spinner
+        ids = db.getAllMovementIds();
+
+        if (ids == null || ids.isEmpty()) {
+            ids = new java.util.ArrayList<>();
+            ids.add("Sin registros");
+        }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
                 this,
                 R.layout.spinner_white,
                 ids
         );
-
         adapter.setDropDownViewResource(R.layout.spinner_white);
         spinner.setAdapter(adapter);
+
+        //Cuando se seleccione un ID
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                String selectedId = ids.get(position);
+
+                if (selectedId.equals("Sin registros")) return;
+
+                // Convertir ID a número
+                long idMovement = Long.parseLong(selectedId);
+
+                // Obtener movimiento desde SQLite
+                Movements mov = db.getMovementById(idMovement);
+                if (mov == null) return;
+
+                //Rellenar campos
+                txtMount.setText(mov.mount);
+                txtDate.setText(mov.date);
+
+                if (mov.type) {
+                    radioIngreso.setChecked(true);
+                } else {
+                    radioGasto.setChecked(true);
+                }
+
+                btnCategorias.setText("Categoría: " + mov.category);
+
+                if (mov.photo != null && !mov.photo.isEmpty()) {
+                    try {
+                        Uri imageUri = Uri.parse(mov.photo); // convertir string a Uri
+                        Bitmap bitmap = null;
+
+                        try (InputStream inputStream = getContentResolver().openInputStream(imageUri)) {
+                            if (inputStream != null) {
+                                bitmap = BitmapFactory.decodeStream(inputStream);
+                            }
+                        }
+
+                        if (bitmap != null) {
+                            imgPhoto.setImageBitmap(bitmap);
+                            Toast.makeText(EditActivity.this, "Imagen cargada desde galería", Toast.LENGTH_SHORT).show();
+                        } else {
+                            imgPhoto.setImageResource(R.drawable.camera);
+                            Toast.makeText(EditActivity.this, "No se pudo decodificar la imagen", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        imgPhoto.setImageResource(R.drawable.camera);
+                        Toast.makeText(EditActivity.this, "Error al cargar imagen", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    imgPhoto.setImageResource(R.drawable.camera);
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        Button Save = findViewById(R.id.btnSave2);
+        Save.setOnClickListener(v -> {
+
+        });
     }
 }

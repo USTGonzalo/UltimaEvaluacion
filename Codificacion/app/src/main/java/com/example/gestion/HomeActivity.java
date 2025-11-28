@@ -41,6 +41,11 @@ public class HomeActivity extends AppCompatActivity {
             finish();
         });
 
+        BtnAll = findViewById(R.id.BtnAll);
+        BtnAll.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, AllActivity.class);
+            startActivity(intent);
+        });
 
     }
 }
