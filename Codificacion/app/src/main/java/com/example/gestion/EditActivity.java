@@ -1,8 +1,5 @@
 package com.example.gestion;
 
-import static android.widget.Toast.LENGTH_LONG;
-import static android.widget.Toast.LENGTH_SHORT;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -12,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -26,7 +24,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.gestion.cache.Movements;
 import com.example.gestion.database.MovementsDatabase;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
@@ -134,6 +131,61 @@ public class EditActivity extends AppCompatActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
+        });
+
+        ImageButton Delete = findViewById(R.id.BtnDeleteMov);
+        Delete.setOnClickListener(v -> {
+
+            String selectedId = (String) spinner.getSelectedItem();
+
+            // Validación
+            if (selectedId == null || selectedId.equals("Sin registros")) {
+                Toast.makeText(EditActivity.this, "No hay registros para eliminar", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            long idToDelete = Long.parseLong(selectedId);
+
+            // Mostrar confirmación
+            new androidx.appcompat.app.AlertDialog.Builder(EditActivity.this)
+                    .setTitle("Confirmar eliminación")
+                    .setMessage("¿Seguro que deseas eliminar el movimiento con ID " + idToDelete + "?")
+                    .setPositiveButton("Eliminar", (dialog, which) -> {
+
+                        MovementsDatabase db2 = new MovementsDatabase(EditActivity.this);
+                        int rows = db2.deleteMovement(idToDelete);
+
+                        if (rows > 0) {
+                            Toast.makeText(EditActivity.this, "Movimiento eliminado", Toast.LENGTH_SHORT).show();
+
+                            // Actualizar spinner
+                            ids = db.getAllMovementIds();
+                            if (ids.isEmpty()) {
+                                ids.add("Sin registros");
+                            }
+
+                            ArrayAdapter<String> newAdapter = new ArrayAdapter<>(
+                                    EditActivity.this,
+                                    R.layout.spinner_white,
+                                    ids
+                            );
+                            newAdapter.setDropDownViewResource(R.layout.spinner_white);
+                            spinner.setAdapter(newAdapter);
+
+                            // Vaciar campos
+                            txtMount.setText("");
+                            txtDate.setText("");
+                            radioIngreso.setChecked(false);
+                            radioGasto.setChecked(false);
+                            btnCategorias.setText("Categoría");
+                            imgPhoto.setImageResource(R.drawable.camera);
+
+                        } else {
+                            Toast.makeText(EditActivity.this, "No se pudo eliminar", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .setNegativeButton("Cancelar", null)
+                    .show();
         });
 
         Button Save = findViewById(R.id.btnSave2);

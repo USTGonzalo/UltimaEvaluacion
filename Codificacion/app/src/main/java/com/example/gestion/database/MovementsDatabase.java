@@ -84,20 +84,6 @@ public class MovementsDatabase {
         return rows;
     }
 
-
-    // ================================
-    // OBTENER CURSOR DE UN MOVIMIENTO (NO SE USA, PERO LO DEJO)
-    // ================================
-    public Cursor getMovement(long id) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-
-        return db.rawQuery(
-                "SELECT * FROM " + MovementsEntry.TABLE_NAME +
-                        " WHERE " + MovementsEntry.COLUMN_ID + " = ?",
-                new String[]{String.valueOf(id)}
-        );
-    }
-
     public List<String> getAllMovementIds() {
         List<String> ids = new ArrayList<>();
 

@@ -14,6 +14,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Gestion">
         <activity
+            android:name=".CategoriesActivity"
+            android:exported="false" />
+        <activity
             android:name=".AllActivity"
             android:exported="false" />
         <activity
