@@ -18,20 +18,28 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.gestion.cache.Categories;
+import com.example.gestion.database.CategoriesDatabase;
 import com.example.gestion.database.MovementsDatabase;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 public class AddActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE = 100;
     private Uri imageUri = null;
 
+    int selectedCategoryId = -1;
+    String selectedCategoryName = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_add);
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -42,7 +50,6 @@ public class AddActivity extends AppCompatActivity {
 
         // Selector de fecha
         txtDate.setOnClickListener(v -> {
-
             final Calendar calendar = Calendar.getInstance();
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
@@ -60,22 +67,36 @@ public class AddActivity extends AppCompatActivity {
             datePickerDialog.show();
         });
 
-        // categorías
+        // BOTÓN DE CATEGORÍAS
         Button btnCat = findViewById(R.id.BtnCategories);
-        String[] categorias = {"Comida", "Transporte", "Casa", "Trabajo", "Ocio"};
 
         btnCat.setOnClickListener(v -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(AddActivity.this);
-            builder.setTitle("Categorías");
 
-            builder.setItems(categorias, (dialog, which) -> {
-                btnCat.setText(categorias[which]);
+            CategoriesDatabase catDB = new CategoriesDatabase(AddActivity.this);
+            List<Categories> lista = catDB.getAllCategories();
+
+            if (lista.isEmpty()) {
+                Toast.makeText(this, "No hay categorías registradas", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            // Convertimos los nombres para mostrarlos en el diálogo
+            List<String> nombres = new ArrayList<>();
+            for (Categories c : lista) nombres.add(c.getName());
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(AddActivity.this);
+            builder.setTitle("Seleccionar categoría");
+
+            builder.setItems(nombres.toArray(new String[0]), (dialog, which) -> {
+                selectedCategoryId = lista.get(which).getId();
+                selectedCategoryName = lista.get(which).getName();
+                btnCat.setText(selectedCategoryName);
             });
 
             builder.show();
         });
 
-        // Guardar información
+        // GUARDAR MOVIMIENTO
         Button BtnSave = findViewById(R.id.BtnSave);
         BtnSave.setOnClickListener(v -> {
 
@@ -85,26 +106,24 @@ public class AddActivity extends AppCompatActivity {
 
             String monto = txtMount.getText().toString().trim();
             String fecha = txtDate.getText().toString().trim();
-            String tipo = (radioSelected != null) ? radioSelected.getText().toString() : "No seleccionado";
-            String categoria = btnCat.getText().toString();
+            String tipo = (radioSelected != null) ? radioSelected.getText().toString() : "";
             String url = (imageUri != null) ? imageUri.toString() : "";
 
             // Validaciones
-            if (monto.isEmpty() || fecha.isEmpty() || tipo.equals("No seleccionado") || categoria.equals("Categorías")) {
+            if (monto.isEmpty() || fecha.isEmpty() || tipo.isEmpty() || selectedCategoryId == -1) {
                 Toast.makeText(this, "Debe completar todos los campos", Toast.LENGTH_LONG).show();
                 return;
             }
 
-            // Guardar en la base de datos
-            MovementsDatabase db = new MovementsDatabase(AddActivity.this);
-
             boolean typeBool = tipo.equalsIgnoreCase("Ingreso");
+
+            MovementsDatabase db = new MovementsDatabase(AddActivity.this);
 
             long id = db.insertMovement(
                     monto,
                     fecha,
                     typeBool,
-                    1,
+                    selectedCategoryId,  // <-- ID real de categoría
                     url
             );
 

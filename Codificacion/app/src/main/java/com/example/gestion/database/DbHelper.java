@@ -48,7 +48,16 @@ public class DbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_ENTRIES_CATEGORIES);
         db.execSQL(SQL_CREATE_ENTRIES_MOVEMENTS);
         db.execSQL(SQL_CREATE_ENTRIES_CONFIGS);
+
+        // Insertar configuración inicial
+        db.execSQL("INSERT INTO " + ConfigsContract.ConfigsEntry.TABLE_NAME +
+                " (" +
+                ConfigsContract.ConfigsEntry.COLUMN_CURRENT_TYPE + ", " +
+                ConfigsContract.ConfigsEntry.COLUMN_BACKGROUND + ", " +
+                ConfigsContract.ConfigsEntry.COLUMN_THEME +
+                ") VALUES ('USDCLP', '', 0)");
     }
+
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {

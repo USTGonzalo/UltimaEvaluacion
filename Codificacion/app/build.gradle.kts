@@ -4,9 +4,7 @@ plugins {
 
 android {
     namespace = "com.example.gestion"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.gestion"
@@ -40,7 +38,11 @@ dependencies {
     implementation(libs.constraintlayout)
     implementation(libs.viewpager2)
     implementation(libs.cardview)
+    implementation(libs.recyclerview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+
+    // Volley para solicitudes HTTP
+    implementation("com.android.volley:volley:1.2.1")
 }

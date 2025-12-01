@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.example.gestion.cache.ConfigModel;
+
 public class ConfigsDAO {
 
     private final DbHelper dbHelper;
@@ -43,4 +45,33 @@ public class ConfigsDAO {
         db.insert(ConfigsContract.ConfigsEntry.TABLE_NAME, null, values);
         db.close();
     }
+
+    public ConfigModel getConfig() {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT " +
+                        ConfigsContract.ConfigsEntry.COLUMN_CURRENT_TYPE + ", " +
+                        ConfigsContract.ConfigsEntry.COLUMN_BACKGROUND + ", " +
+                        ConfigsContract.ConfigsEntry.COLUMN_THEME +
+                        " FROM " + ConfigsContract.ConfigsEntry.TABLE_NAME + " LIMIT 1",
+                null
+        );
+
+        ConfigModel config = null;
+
+        if (cursor.moveToFirst()) {
+            String currentType = cursor.getString(0);
+            String background = cursor.getString(1);
+            int theme = cursor.getInt(2);
+
+            config = new ConfigModel(currentType, background, theme);
+        }
+
+        cursor.close();
+        db.close();
+
+        return config;
+    }
+
 }
