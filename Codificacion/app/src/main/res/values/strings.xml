@@ -36,4 +36,5 @@
     <string name="descripci_n">Descripción</string>
     <string name="id">ID</string>
     <string name="ajuste_de_categoria">Ajuste de categoria</string>
+    <string name="cargar_balance">Cargar Balance</string>
 </resources>

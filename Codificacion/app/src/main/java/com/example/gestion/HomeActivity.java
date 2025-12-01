@@ -45,7 +45,7 @@ public class HomeActivity extends AppCompatActivity {
         iconIngresosHoy = findViewById(R.id.iconIngresosHoy);
         iconIngresosMes = findViewById(R.id.iconIngresosMes);
 
-        Button BtnAdd, BtnEdit, BtnMovements, BtnAll, BtnCat, BtnExit;
+        Button BtnAdd, BtnEdit, BtnMovements, BtnAll, BtnCat, BtnExit, Reload;
         ImageButton ImgBtnConfigs;
 
         BtnAdd = findViewById(R.id.BtnAdd);
@@ -65,6 +65,9 @@ public class HomeActivity extends AppCompatActivity {
 
         ImgBtnConfigs = findViewById(R.id.ImgBtnBack);
         ImgBtnConfigs.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, ConfigsActivity.class)));
+
+        Reload = findViewById(R.id.BtnReload);
+        Reload.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, MainActivity.class)));
     }
 
     private double convertFromUSD(double amountUSD, String targetCurrency) {
@@ -75,7 +78,7 @@ public class HomeActivity extends AppCompatActivity {
     private void loadDashboardValues() {
         MovementsDatabase db = new MovementsDatabase(this);
 
-        String today = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        String today = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
         String month = new SimpleDateFormat("MM", Locale.getDefault()).format(new Date());
 
         // Valores en USD

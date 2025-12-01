@@ -22,12 +22,12 @@
         tools:ignore="TextSizeCheck" />
 
     <Button
-        android:id="@+id/button11"
+        android:id="@+id/BtnReload"
         android:layout_width="178dp"
         android:layout_height="48dp"
-        android:backgroundTint="@color/black"
         android:layout_marginTop="152dp"
-        android:text="Button"
+        android:backgroundTint="@color/black"
+        android:text="@string/cargar_balance"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cardIngresosMes" />
 

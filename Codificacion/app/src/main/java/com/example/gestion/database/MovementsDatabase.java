@@ -208,8 +208,9 @@ public class MovementsDatabase {
                         + MovementsEntry.TABLE_NAME +
                         " WHERE " + MovementsEntry.COLUMN_TYPE + " = 0 AND "
                         + MovementsEntry.COLUMN_DATE + " = ?",
-                new String[]{today.replace("-", "/")} // ← ADAPTADO
+                new String[]{today}
         );
+
 
         double total = 0;
         if (cursor.moveToFirst()) {
@@ -258,8 +259,9 @@ public class MovementsDatabase {
                         + MovementsEntry.TABLE_NAME +
                         " WHERE " + MovementsEntry.COLUMN_TYPE + " = 1 AND "
                         + MovementsEntry.COLUMN_DATE + " = ?",
-                new String[]{today.replace("-", "/")} // ← ADAPTADO
+                new String[]{today}
         );
+
 
         double total = 0;
         if (cursor.moveToFirst()) {
