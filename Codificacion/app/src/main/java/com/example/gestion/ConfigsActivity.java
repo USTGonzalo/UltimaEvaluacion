@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -65,7 +66,12 @@ public class ConfigsActivity extends AppCompatActivity {
         });
 
         loadCurrencies();
+
+        Button ExitW = findViewById(R.id.btnBack4);
+        ExitW.setOnClickListener(v -> finish());
     }
+
+
 
     // =======================================
     // CARGAR CONFIGURACIÓN GUARDADA DEL SQLITE

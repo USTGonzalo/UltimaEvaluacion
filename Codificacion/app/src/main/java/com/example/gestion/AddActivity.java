@@ -1,8 +1,10 @@
 package com.example.gestion;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Button;
@@ -13,7 +15,10 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -22,6 +27,7 @@ import com.example.gestion.cache.Categories;
 import com.example.gestion.database.CategoriesDatabase;
 import com.example.gestion.database.MovementsDatabase;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -29,7 +35,11 @@ import java.util.List;
 public class AddActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE = 100;
+    private static final int TAKE_PHOTO = 200;
+    private static final int CAMERA_PERMISSION_CODE = 201;
+
     private Uri imageUri = null;
+    private Uri photoUri = null;
 
     int selectedCategoryId = -1;
     String selectedCategoryName = "";
@@ -40,17 +50,22 @@ public class AddActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_add);
 
+        // Ajuste de pantalla completa
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
+        // Solicitar permiso de cámara si falta
+        checkCameraPermission();
+
         EditText txtDate = findViewById(R.id.TxtDate);
 
-        // Selector de fecha
+        // Selección de fecha
         txtDate.setOnClickListener(v -> {
             final Calendar calendar = Calendar.getInstance();
+
             int year = calendar.get(Calendar.YEAR);
             int month = calendar.get(Calendar.MONTH);
             int day = calendar.get(Calendar.DAY_OF_MONTH);
@@ -67,9 +82,8 @@ public class AddActivity extends AppCompatActivity {
             datePickerDialog.show();
         });
 
-        // BOTÓN DE CATEGORÍAS
+        // Botón seleccionar categoría
         Button btnCat = findViewById(R.id.BtnCategories);
-
         btnCat.setOnClickListener(v -> {
 
             CategoriesDatabase catDB = new CategoriesDatabase(AddActivity.this);
@@ -80,7 +94,6 @@ public class AddActivity extends AppCompatActivity {
                 return;
             }
 
-            // Convertimos los nombres para mostrarlos en el diálogo
             List<String> nombres = new ArrayList<>();
             for (Categories c : lista) nombres.add(c.getName());
 
@@ -96,7 +109,7 @@ public class AddActivity extends AppCompatActivity {
             builder.show();
         });
 
-        // GUARDAR MOVIMIENTO
+        // Guardar movimiento
         Button BtnSave = findViewById(R.id.BtnSave);
         BtnSave.setOnClickListener(v -> {
 
@@ -109,7 +122,6 @@ public class AddActivity extends AppCompatActivity {
             String tipo = (radioSelected != null) ? radioSelected.getText().toString() : "";
             String url = (imageUri != null) ? imageUri.toString() : "";
 
-            // Validaciones
             if (monto.isEmpty() || fecha.isEmpty() || tipo.isEmpty() || selectedCategoryId == -1) {
                 Toast.makeText(this, "Debe completar todos los campos", Toast.LENGTH_LONG).show();
                 return;
@@ -123,7 +135,7 @@ public class AddActivity extends AppCompatActivity {
                     monto,
                     fecha,
                     typeBool,
-                    selectedCategoryId,  // <-- ID real de categoría
+                    selectedCategoryId,
                     url
             );
 
@@ -135,28 +147,91 @@ public class AddActivity extends AppCompatActivity {
             }
         });
 
-        // Seleccionar imagen
+        // Cargar imagen / abrir cámara
         ImageView btnComp = findViewById(R.id.BtnComp);
-
         btnComp.setOnClickListener(v -> {
-            Intent intent = new Intent(Intent.ACTION_PICK);
-            intent.setType("image/*");
-            startActivityForResult(intent, PICK_IMAGE);
+            if (checkCameraPermission()) {
+                openCamera();
+            }
         });
 
-        // Cancelar y volver
+        // Cancelar
         Button BtnCancel = findViewById(R.id.BtnCancel);
         BtnCancel.setOnClickListener(v -> finish());
     }
 
-    // Muestra la imagen
+    // ----------- MANEJO DE PERMISOS ----------- //
+
+    private boolean checkCameraPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.CAMERA},
+                    CAMERA_PERMISSION_CODE
+            );
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == CAMERA_PERMISSION_CODE) {
+            if (grantResults.length > 0 &&
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openCamera();
+            } else {
+                Toast.makeText(this, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // ----------- ABRIR CÁMARA ----------- //
+
+    private void openCamera() {
+        try {
+            File photoFile = File.createTempFile("photo_", ".jpg", getCacheDir());
+
+            photoUri = androidx.core.content.FileProvider.getUriForFile(
+                    this,
+                    getPackageName() + ".provider",
+                    photoFile
+            );
+
+            Intent intent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, photoUri);
+            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+            startActivityForResult(intent, TAKE_PHOTO);
+
+        } catch (Exception e) {
+            Toast.makeText(this, "No se pudo abrir la cámara", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    // ----------- RECIBIR FOTO / IMAGEN ----------- //
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        ImageView btnComp = findViewById(R.id.BtnComp);
+
+        if (resultCode == RESULT_OK && requestCode == TAKE_PHOTO) {
+            imageUri = photoUri;
+            btnComp.setImageURI(imageUri);
+            return;
+        }
+
         if (resultCode == RESULT_OK && requestCode == PICK_IMAGE) {
             imageUri = data.getData();
-            ImageView btnComp = findViewById(R.id.BtnComp);
             btnComp.setImageURI(imageUri);
         }
     }
