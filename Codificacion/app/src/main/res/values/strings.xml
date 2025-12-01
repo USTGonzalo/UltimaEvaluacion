@@ -27,4 +27,10 @@
     <string name="image">Boleta</string>
     <string name="todo">TODO</string>
     <string name="ajuste_de_movimiento">AJUSTE DE MOVIMIENTO</string>
+    <string name="crear_nuevo">Crear nuevo</string>
+    <string name="volver">Volver</string>
+    <string name="categor_as">Categorías</string>
+    <string name="nueva_categor_a">Nueva categoría</string>
+    <string name="ingrese_nombre">Ingrese nombre</string>
+    <string name="name">Name</string>
 </resources>

@@ -39,7 +39,6 @@ public class MovementsDatabase {
         return newId;
     }
 
-
     // ================================
     // ACTUALIZAR MOVIMIENTO
     // ================================
@@ -65,7 +64,6 @@ public class MovementsDatabase {
         db.close();
         return rows;
     }
-
 
     // ================================
     // ELIMINAR MOVIMIENTO
@@ -107,9 +105,8 @@ public class MovementsDatabase {
         return ids;
     }
 
-
     // ================================
-    // OBTENER MOVIMIENTO COMO OBJETO COMPLETO
+    // OBTENER MOVIMIENTO COMPLETO POR ID
     // ================================
     public Movements getMovementById(long id) {
 
@@ -177,28 +174,127 @@ public class MovementsDatabase {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
         String query;
-            // MISMO DÍA
-            query = "SELECT * FROM " + MovementsEntry.TABLE_NAME +
-                    " WHERE " + MovementsEntry.COLUMN_DATE + " = ?" +
-                    " ORDER BY " + MovementsEntry.COLUMN_ID + " DESC";
+        query = "SELECT * FROM " + MovementsEntry.TABLE_NAME +
+                " WHERE " + MovementsEntry.COLUMN_DATE + " = ?" +
+                " ORDER BY " + MovementsEntry.COLUMN_ID + " DESC";
 
-            Cursor cursor = db.rawQuery(query, new String[]{startDate});
+        Cursor cursor = db.rawQuery(query, new String[]{startDate});
 
-            if (cursor.moveToFirst()) {
-                do {
-                    Movements m = new Movements();
-                    m.id = cursor.getLong(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_ID));
-                    m.mount = cursor.getString(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_MOUNT));
-                    m.date = cursor.getString(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_DATE));
-                    m.type = cursor.getInt(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_TYPE)) == 1;
-                    m.category = cursor.getInt(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_CATEGORY));
-                    m.photo = cursor.getString(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_URLPHOTO));
-                    list.add(m);
-                } while (cursor.moveToNext());
-            }
-
-            cursor.close();
-            db.close();
-            return list;
+        if (cursor.moveToFirst()) {
+            do {
+                Movements m = new Movements();
+                m.id = cursor.getLong(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_ID));
+                m.mount = cursor.getString(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_MOUNT));
+                m.date = cursor.getString(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_DATE));
+                m.type = cursor.getInt(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_TYPE)) == 1;
+                m.category = cursor.getInt(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_CATEGORY));
+                m.photo = cursor.getString(cursor.getColumnIndexOrThrow(MovementsEntry.COLUMN_URLPHOTO));
+                list.add(m);
+            } while (cursor.moveToNext());
         }
+
+        cursor.close();
+        db.close();
+        return list;
     }
+
+    // ============================================================
+    // GASTOS DEL DÍA (dd/MM/yyyy)
+    // ============================================================
+    public double getGastosHoy(String today) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT SUM(CAST(" + MovementsEntry.COLUMN_MOUNT + " AS REAL)) FROM "
+                        + MovementsEntry.TABLE_NAME +
+                        " WHERE " + MovementsEntry.COLUMN_TYPE + " = 0 AND "
+                        + MovementsEntry.COLUMN_DATE + " = ?",
+                new String[]{today.replace("-", "/")} // ← ADAPTADO
+        );
+
+        double total = 0;
+        if (cursor.moveToFirst()) {
+            total = cursor.isNull(0) ? 0 : cursor.getDouble(0);
+        }
+
+        cursor.close();
+        db.close();
+        return total;
+    }
+
+
+    // ============================================================
+    // GASTOS DEL MES (dd/MM/yyyy) → busca "/MM/"
+    // ============================================================
+    public double getGastosMes(String monthTwoDigits) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String pattern = "%/" + monthTwoDigits + "/%"; // ejemplo: %/11/%
+
+        Cursor cursor = db.rawQuery(
+                "SELECT SUM(CAST(" + MovementsEntry.COLUMN_MOUNT + " AS REAL)) FROM " +
+                        MovementsEntry.TABLE_NAME +
+                        " WHERE " + MovementsEntry.COLUMN_TYPE + " = 0 AND " +
+                        MovementsEntry.COLUMN_DATE + " LIKE ?",
+                new String[]{pattern}
+        );
+
+        double total = 0;
+        if (cursor.moveToFirst()) {
+            total = cursor.isNull(0) ? 0 : cursor.getDouble(0);
+        }
+
+        cursor.close();
+        db.close();
+        return total;
+    }
+
+    // ============================================================
+    // INGRESOS DEL DÍA (dd/MM/yyyy)
+    // ============================================================
+    public double getIngresosHoy(String today) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery(
+                "SELECT SUM(CAST(" + MovementsEntry.COLUMN_MOUNT + " AS REAL)) FROM "
+                        + MovementsEntry.TABLE_NAME +
+                        " WHERE " + MovementsEntry.COLUMN_TYPE + " = 1 AND "
+                        + MovementsEntry.COLUMN_DATE + " = ?",
+                new String[]{today.replace("-", "/")} // ← ADAPTADO
+        );
+
+        double total = 0;
+        if (cursor.moveToFirst()) {
+            total = cursor.isNull(0) ? 0 : cursor.getDouble(0);
+        }
+
+        cursor.close();
+        db.close();
+        return total;
+    }
+
+
+    // ============================================================
+    // INGRESOS DEL MES (dd/MM/yyyy) → busca "/MM/"
+    // ============================================================
+    public double getIngresosMes(String monthTwoDigits) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        String pattern = "%/" + monthTwoDigits + "/%";
+
+        Cursor cursor = db.rawQuery(
+                "SELECT SUM(CAST(" + MovementsEntry.COLUMN_MOUNT + " AS REAL)) FROM " +
+                        MovementsEntry.TABLE_NAME +
+                        " WHERE " + MovementsEntry.COLUMN_TYPE + " = 1 AND " +
+                        MovementsEntry.COLUMN_DATE + " LIKE ?",
+                new String[]{pattern}
+        );
+
+        double total = 0;
+        if (cursor.moveToFirst()) {
+            total = cursor.isNull(0) ? 0 : cursor.getDouble(0);
+        }
+
+        cursor.close();
+        db.close();
+        return total;
+    }
+}
