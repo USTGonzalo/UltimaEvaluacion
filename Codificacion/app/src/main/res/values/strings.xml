@@ -33,4 +33,7 @@
     <string name="nueva_categor_a">Nueva categoría</string>
     <string name="ingrese_nombre">Ingrese nombre</string>
     <string name="name">Name</string>
+    <string name="descripci_n">Descripción</string>
+    <string name="id">ID</string>
+    <string name="ajuste_de_categoria">Ajuste de categoria</string>
 </resources>

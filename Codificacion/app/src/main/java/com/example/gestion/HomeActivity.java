@@ -12,6 +12,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.gestion.cache.ConfigModel;
+import com.example.gestion.cache.Conversion;
+import com.example.gestion.database.ConfigsDAO;
 import com.example.gestion.database.MovementsDatabase;
 
 import java.text.SimpleDateFormat;
@@ -46,60 +49,59 @@ public class HomeActivity extends AppCompatActivity {
         ImageButton ImgBtnConfigs;
 
         BtnAdd = findViewById(R.id.BtnAdd);
-        BtnAdd.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, AddActivity.class);
-            startActivity(intent);
-        });
+        BtnAdd.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, AddActivity.class)));
 
         BtnEdit = findViewById(R.id.BtnEdit);
-        BtnEdit.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, EditActivity.class);
-            startActivity(intent);
-        });
+        BtnEdit.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, EditActivity.class)));
 
         BtnExit = findViewById(R.id.BtnExit);
         BtnExit.setOnClickListener(v -> finish());
 
         BtnAll = findViewById(R.id.BtnAll);
-        BtnAll.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, AllActivity.class);
-            startActivity(intent);
-        });
+        BtnAll.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, AllActivity.class)));
 
         BtnCat = findViewById(R.id.BtnCat);
-        BtnCat.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, CategoriesActivity.class);
-            startActivity(intent);
-        });
+        BtnCat.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, CategoriesActivity.class)));
 
-        ImgBtnConfigs = findViewById(R.id.ImgBtnConfigs);
-        ImgBtnConfigs.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, CategoriesActivity.class);
-            startActivity(intent);
-        });
+        ImgBtnConfigs = findViewById(R.id.ImgBtnBack);
+        ImgBtnConfigs.setOnClickListener(v -> startActivity(new Intent(HomeActivity.this, ConfigsActivity.class)));
+    }
+
+    private double convertFromUSD(double amountUSD, String targetCurrency) {
+        double rate = Conversion.getRateByType(targetCurrency);
+        return amountUSD * rate;
     }
 
     private void loadDashboardValues() {
         MovementsDatabase db = new MovementsDatabase(this);
 
-        // FECHA HOY en formato dd-MM-yyyy
         String today = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+        String month = new SimpleDateFormat("MM", Locale.getDefault()).format(new Date());
 
-        // MES (dos dígitos) extraído de la fecha actual
-        String month = new SimpleDateFormat("MM", Locale.getDefault()).format(new Date()); // "11" por ejemplo
-
-        // OBTENER VALORES desde la base de datos
+        // Valores en USD
         double gastosHoy = db.getGastosHoy(today);
         double gastosMes = db.getGastosMes(month);
         double ingresosHoy = db.getIngresosHoy(today);
         double ingresosMes = db.getIngresosMes(month);
 
-        // FORMATEAR los números con separador de miles/decimales si quieres (opcional)
-        // Aquí los muestro simples con "$ "
-        iconGastosHoy.setText("$ " + String.format(Locale.getDefault(), "%.1f", gastosHoy));
-        iconGastosMes.setText("$ " + String.format(Locale.getDefault(), "%.1f", gastosMes));
-        iconIngresosHoy.setText("$ " + String.format(Locale.getDefault(), "%.1f", ingresosHoy));
-        iconIngresosMes.setText("$ " + String.format(Locale.getDefault(), "%.1f", ingresosMes));
+        // Leer configuración actual
+        ConfigsDAO dao = new ConfigsDAO(this);
+        ConfigModel config = dao.getConfig();
+
+        String currency = config.type;
+
+        // Convertir si no es USD
+        if (!currency.equals("USD")) {
+            gastosHoy = convertFromUSD(gastosHoy, currency);
+            gastosMes = convertFromUSD(gastosMes, currency);
+            ingresosHoy = convertFromUSD(ingresosHoy, currency);
+            ingresosMes = convertFromUSD(ingresosMes, currency);
+        }
+
+        iconGastosHoy.setText(currency + " " + String.format(Locale.getDefault(), "%.1f", gastosHoy));
+        iconGastosMes.setText(currency + " " + String.format(Locale.getDefault(), "%.1f", gastosMes));
+        iconIngresosHoy.setText(currency + " " + String.format(Locale.getDefault(), "%.1f", ingresosHoy));
+        iconIngresosMes.setText(currency + " " + String.format(Locale.getDefault(), "%.1f", ingresosMes));
     }
 
     @Override

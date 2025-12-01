@@ -71,7 +71,7 @@ public class CategoriesActivity extends AppCompatActivity {
         CategoriesDatabase db = new CategoriesDatabase(this);
         List<Categories> list = db.getAllCategories();
 
-        adapter = new CategoriesAdapter(list);
+        adapter = new CategoriesAdapter(this, list);
         recyclerView.setAdapter(adapter);
     }
 

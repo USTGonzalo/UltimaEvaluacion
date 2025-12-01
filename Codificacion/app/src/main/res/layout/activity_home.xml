@@ -86,7 +86,7 @@
         android:layout_marginStart="24dp"/>
 
     <ImageButton
-        android:id="@+id/ImgBtnConfigs"
+        android:id="@+id/ImgBtnBack"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_marginTop="20dp"
@@ -318,6 +318,6 @@
         android:text="@string/config"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ImgBtnConfigs" />
+        app:layout_constraintTop_toBottomOf="@+id/ImgBtnBack" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

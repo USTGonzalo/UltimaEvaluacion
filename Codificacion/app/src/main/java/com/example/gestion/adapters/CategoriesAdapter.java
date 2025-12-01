@@ -1,5 +1,7 @@
 package com.example.gestion.adapters;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.gestion.EditCategoryActivity;
 import com.example.gestion.cache.Categories;
 import com.example.gestion.R;
 
@@ -18,10 +21,12 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
 
     private List<Categories> categoriesList;
     private List<Categories> categoriesListFull;
+    private Context context;
 
-    public CategoriesAdapter(List<Categories> categoriesList) {
+    public CategoriesAdapter(Context context, List<Categories> categoriesList) {
+        this.context = context;
         this.categoriesList = categoriesList;
-        this.categoriesListFull = new ArrayList<>(categoriesList); // Copia completa para filtrar
+        this.categoriesListFull = new ArrayList<>(categoriesList);
     }
 
     @NonNull
@@ -35,9 +40,25 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Categories cat = categoriesList.get(position);
 
-        holder.txtId.setText("ID: " + cat.getId());
+        holder.txtId.setText(String.valueOf(cat.getId()));
         holder.txtName.setText(cat.getName());
         holder.txtDescription.setText(cat.getDescription());
+
+        // Click en la tarjeta
+        holder.itemView.setOnClickListener(v -> {
+            int realPosition = holder.getAbsoluteAdapterPosition();
+            if (realPosition == RecyclerView.NO_POSITION) return;
+
+            Categories selected = categoriesList.get(realPosition);
+
+            Intent intent = new Intent(context, EditCategoryActivity.class);
+            intent.putExtra("id", selected.getId());
+            intent.putExtra("name", selected.getName());
+            intent.putExtra("description", selected.getDescription());
+
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            context.startActivity(intent);
+        });
     }
 
     @Override
@@ -45,7 +66,7 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
         return categoriesList.size();
     }
 
-    // FILTRADO
+    // FILTRO
     public void filter(String text) {
         categoriesList.clear();
 
@@ -55,9 +76,9 @@ public class CategoriesAdapter extends RecyclerView.Adapter<CategoriesAdapter.Vi
             text = text.toLowerCase();
 
             for (Categories item : categoriesListFull) {
-                if (item.getName().toLowerCase().contains(text) ||
-                        item.getDescription().toLowerCase().contains(text) ||
-                        String.valueOf(item.getId()).contains(text)) {
+                if (item.getName().toLowerCase().contains(text)
+                        || item.getDescription().toLowerCase().contains(text)
+                        || String.valueOf(item.getId()).contains(text)) {
 
                     categoriesList.add(item);
                 }
