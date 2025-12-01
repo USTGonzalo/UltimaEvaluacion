@@ -74,4 +74,4 @@ ExchangeRateHost -- https://api.exchangerate.host/live
 
 ## 🧑‍💻 Autor
 
-Desarrollado por **Tu Nombre**.
+Desarrollado por **Gonzalo Fuentes**.
